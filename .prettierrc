@@ -1,0 +1,11 @@
+{
+    "trailingComma": "es5",
+    "arrowParens": "avoid",
+    "tabWidth": 4,
+    "endOfLine": "auto",
+    "semi": false,
+    "htmlFormatWrapAttributes": "force-aligned",
+    "singleQuote": true,
+    "proseWrap": "always",
+    "printWidth": 80
+}
