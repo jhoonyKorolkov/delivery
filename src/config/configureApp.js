@@ -1,17 +1,10 @@
 import express from 'express'
-import session from 'express-session'
 import passport from './passport.js'
+import middlewareSession from './session.js'
 
 const configureApp = app => {
     app.use(express.json())
-    app.use(
-        session({
-            secret: 'SECRET',
-            resave: false,
-            saveUninitialized: false,
-            cookie: { secure: false },
-        })
-    )
+    app.use(middlewareSession)
     app.use(passport.initialize())
     app.use(passport.session())
 }

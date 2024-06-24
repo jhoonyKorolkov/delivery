@@ -3,7 +3,6 @@ import { Schema, Types, model } from 'mongoose'
 const MessageSchema = new Schema({
     author: {
         type: Types.ObjectId,
-        ref: 'User',
         required: true,
     },
     sentAt: {
@@ -17,7 +16,7 @@ const MessageSchema = new Schema({
     },
     readAt: {
         type: Date,
-        default: null,
+        default: '',
     },
 })
 
@@ -28,6 +27,15 @@ class MessageClass {
             text,
         })
 
+        return message
+    }
+
+    static async markAsRead(messageId) {
+        const message = await this.findByIdAndUpdate(
+            messageId,
+            { readAt: Date.now() },
+            { new: true }
+        )
         return message
     }
 }

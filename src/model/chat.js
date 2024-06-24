@@ -1,4 +1,7 @@
 import { Schema, Types, model } from 'mongoose'
+import { EventEmitter } from 'events'
+
+const chatEmitter = new EventEmitter()
 
 const ChatSchema = new Schema({
     users: {
@@ -24,8 +27,6 @@ class ChatClass {
             const obgSenderId = new Types.ObjectId(senderId)
             const obgReceiverId = new Types.ObjectId(receiverId)
 
-            console.log(obgSenderId, obgReceiverId)
-
             const chat = await this.findOne({
                 users: { $all: [obgSenderId, obgReceiverId] },
             })
@@ -36,17 +37,41 @@ class ChatClass {
         }
     }
 
-    static async createChat(senderId, receiverId, message) {
+    static async createChat(senderId, receiverId) {
         try {
             const chat = await this.create({
                 users: [senderId, receiverId],
-                messages: [message._id],
             })
             return chat
         } catch (error) {
             console.log('Error creating chat', error)
             return null
         }
+    }
+
+    static async getHistory(chatId) {
+        try {
+            const chat = await this.findOne({ _id: chatId }).populate(
+                'messages'
+            )
+            return chat
+        } catch (error) {
+            console.log('Ошибка при получении истории чата', error)
+            return null
+        }
+    }
+
+    static emitNewMessage(chatId, message) {
+        chatEmitter.emit('newMessage', chatId, message)
+    }
+
+    static subscribe(callback) {
+        chatEmitter.on('newMessage', (chatId, message) => {
+            console.log(
+                `Новое сообщение в чате ${chatId}: ${message.text} от ${message.author}`
+            )
+            callback(chatId, message)
+        })
     }
 }
 
